@@ -1,0 +1,61 @@
+<h2>Eventos</h2>
+<hr>
+<form class="row row-cols-lg-auto g-3 align-items-center" action="">
+    <div>
+      <label class="visually-hidden"> for="searchInput">buscar</label>
+      <div class="input-group">
+        <label class="me-3">Filtro:</label>
+        <input 
+        type="text" 
+        class="form-control"
+        placeholder="buscar" 
+        [(ngModel)]="filtroLista"
+        [ngModelOptions]="{standalone: true}" 
+        />
+      </div>
+    </div>
+  </form>
+
+<h3>Filtro: {{filtroLista}} </h3> 
+
+<table class="table">
+    <thead class="table-dark">
+      <tr>
+        <th class="text-center" scope="col">#</th>
+        <th class="text-center" scope="col">
+            <button type="button" class="btn btn-outline-light btn-sm"
+            (click)="alterarImagem()">
+            {{!mostrarImagem ? 'mostrar' : 'ocultar'}}
+        </button></th>
+        <th class="text-center" scope="col">Tema</th>
+        <th class="text-center" scope="col">Local</th>
+        <th class="text-center" scope="col">Data</th>
+        <th class="text-center" scope="col">Qtd Pessoas</th>
+        <th class="text-center" scope="col">Lote</th>
+        <th class="text-center" scope="col">Opções</th>
+      </tr>
+    </thead>
+    
+    <tbody *ngIf="eventos && eventos.length">
+        <tr *ngFor="let evento of eventosFiltrados">
+          <th class="text-center">{{evento.eventoId}}</th>
+          <td class="text-center">{{evento.imagemUrl}}</td>
+          <td class="text-center">{{evento.tema}}</td>
+          <td class="text-center">{{evento.local}}</td>
+          <td class="text-center">{{evento.dataEvento}}</td>
+          <td class="text-center">{{evento.qtdPessoas}}</td>
+          <td class="text-center">{{evento.lote}}</td>
+          <td>
+            <button type="button" class="btn btn-primary btn-sm me-2">Editar</button>
+            <button type="button" class="btn btn-danger btn-sm">Excluir</button>
+        </td>
+        </tr>
+      </tbody>
+    <tfoot *ngIf="!eventos.length">
+        <tr>
+            <td colspan="9" class="text-center">
+                <h4>Nenhum evento encontrados</h4> 
+            </td>
+        </tr>
+    </tfoot>
+</table>

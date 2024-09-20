@@ -21,12 +21,14 @@
 <table class="table">
     <thead class="table-dark">
       <tr>
-        <th class="text-center" scope="col">#</th>
         <th class="text-center" scope="col">
             <button type="button" class="btn btn-outline-light btn-sm"
             (click)="alterarImagem()">
+            <i class="{{!mostrarImagem ? 'fa fa-eye' : 'fa-fa-eye-slash'}}"></i>
             {{!mostrarImagem ? 'mostrar' : 'ocultar'}}
+            
         </button></th>
+        <th class="text-center" scope="col">#</th>
         <th class="text-center" scope="col">Tema</th>
         <th class="text-center" scope="col">Local</th>
         <th class="text-center" scope="col">Data</th>
@@ -38,24 +40,43 @@
     
     <tbody *ngIf="eventos && eventos.length">
         <tr *ngFor="let evento of eventosFiltrados">
-          <th class="text-center">{{evento.eventoId}}</th>
-          <td class="text-center">{{evento.imagemUrl}}</td>
+          <td class="text-center">{{evento.imagemURL}}</td>
+          <th class="text-center">{{evento.id}}</th>
           <td class="text-center">{{evento.tema}}</td>
           <td class="text-center">{{evento.local}}</td>
-          <td class="text-center">{{evento.dataEvento}}</td>
+          <td class="text-center">{{evento.dataEvento | dateTimePipe}}</td>
           <td class="text-center">{{evento.qtdPessoas}}</td>
-          <td class="text-center">{{evento.lote}}</td>
+          <td class="text-center">
+            <ng-container *ngIf="evento.lotes && evento.lotes.length > 0">
+              {{evento.lotes[0].nome | uppercase}}
+            </ng-container>
+            <ng-container *ngIf="!evento.lotes || evento.lotes.length === 0">
+              N/A
+            </ng-container>
+          </td>
           <td>
-            <button type="button" class="btn btn-primary btn-sm me-2">Editar</button>
-            <button type="button" class="btn btn-danger btn-sm">Excluir</button>
+            <button type="button" class="btn btn-primary btn-sm me-2" tooltip="Editar">
+              <i class="fa fa-edit"></i>
+            </button>
+            <button type="button" class="btn btn-danger btn-sm" tooltip="Excluir" (click)="openModal(template)>
+              <i class="fa fa-trash"></i>
+            </button>
         </td>
         </tr>
       </tbody>
     <tfoot *ngIf="!eventos.length">
         <tr>
-            <td colspan="9" class="text-center">
+            <td colspan="8" class="text-center">
                 <h4>Nenhum evento encontrados</h4> 
             </td>
         </tr>
     </tfoot>
 </table>
+
+<ng-template #template></ng-template>
+  <div class="modal-body text-center">
+    <p>Tem certeza que quer deletar este evento?</p>
+    <button type="button" class="btn btn-default" (click)="confirm()" >Sim</button>
+    <button type="button" class="btn btn-primary" (click)="decline()" >Nãp</button>
+  </div>
+</ng-template>

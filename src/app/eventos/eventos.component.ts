@@ -1,23 +1,32 @@
-import { Compiler, Component, TemplateRef } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Compiler, Component, OnInit, TemplateRef } from '@angular/core';
+import { CommonModule, DatePipe } from '@angular/common';
 import { HttpClient, HttpClientModule } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
+import { EventoService } from '../services/evento.service';
+import { Evento } from '../models/Evento';
+import { DateTimeFormatPipe } from '../helps/DateTimeFormat.pipe';
+import { TooltipModule } from 'ngx-bootstrap/tooltip';
+import { BsDropdownModule } from 'ngx-bootstrap/dropdown';
+import { BsModalRef, BsModalService, ModalModule } from 'ngx-bootstrap/modal';
 
 @Component({
   selector: 'app-eventos',
   standalone: true,
-  imports: [CommonModule,HttpClientModule, FormsModule],
+  imports: [CommonModule, HttpClientModule, FormsModule, DateTimeFormatPipe, TooltipModule, BsDropdownModule, ModalModule],
   templateUrl: './eventos.component.html',
-  styleUrls: ['./eventos.component.scss']
+  styleUrls: ['./eventos.component.scss'],
+  providers: [EventoService]
 })
-export class EventosComponent{
 
-  public eventos: any= [];
-  public eventosFiltrados: any = [];
 
-  larguraImagem: number = 50;
-  margemImagem: number =2;
-  mostrarImagem: boolean = true;
+export class EventosComponent implements OnInit{
+  modalRef = {} as BsModalRef;
+  public eventos: Evento[] = [];
+  public eventosFiltrados: Evento[] = [];
+
+  public larguraImagem: number = 50;
+  public margemImagem: number =2;
+  public mostrarImagem: boolean = true;
   private _filtroLista: string = '';
 
   public get filtroLista(): string{
@@ -30,7 +39,7 @@ export class EventosComponent{
     this.eventosFiltrados = this._filtroLista ? this.filtrarEventos(this.filtroLista): this.eventos;
   }
 
-  filtrarEventos(filtrarPor: string): any
+  public filtrarEventos(filtrarPor: string): Evento[]
   {
     filtrarPor = filtrarPor.toLocaleLowerCase();
     return this.eventos.filter(
@@ -40,27 +49,41 @@ export class EventosComponent{
     )
   }
 
-  ngOnInit(): void {
-    this.getEventos();
-  }
-  constructor(private  http: HttpClient) {
 
+  constructor(private eventoService: EventoService,
+    private modalService: BsModalService
+
+  ) {}
+
+  public ngOnInit(): void {
+    this.getEventos();
   }
 
  
-  alterarImagem(){
+  public alterarImagem(): void{
     this.mostrarImagem= !this.mostrarImagem;
   }
 
 
-  public getEventos () : void {
-    this.http.get('https://localhost:7089/Evento').subscribe(
-      response => {
-        this.eventos = response;
+  public getEventos(): void {
+    this.eventoService.getEventos().subscribe({
+      next: (_eventos: Evento[]) => {
+        this.eventos = _eventos;
         this.eventosFiltrados = this.eventos;
       },
-      error => console.log(error)
-      
-    );
+      error: error => console.log(error)
+    });
   }
+
+ openModal(template: TemplateRef<any>):void{
+this.modalRef = this.modalService.show(template, { class: 'modal-sm' });
+}
+ 
+confirm(): void {
+  this.modalRef.hide();
+}
+ 
+   decline(): void {
+     this.modalRef.hide();
+   } 
 }
